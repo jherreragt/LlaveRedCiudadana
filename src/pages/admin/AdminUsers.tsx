@@ -40,18 +40,47 @@ export default function AdminUsers() {
   const handleSave = async () => {
     if (!editUser) return;
     setSaving(true);
-    const { error } = await supabase
-      .from('profiles')
-      .update({ role: editUser.role, is_active: editUser.is_active })
-      .eq('id', editUser.id);
-    setSaving(false);
-    if (error) {
-      setAlert({ type: 'error', text: 'Error al actualizar el usuario.' });
-    } else {
-      setAlert({ type: 'success', text: 'Usuario actualizado correctamente.' });
-      setEditUser(null);
-      load();
+
+    // Use SECURITY DEFINER RPCs instead of direct table UPDATE —
+    // the role and is_active columns are not writable via the Data API.
+    const { error: roleError } = await supabase.rpc('set_user_role', {
+      p_user_id: editUser.id,
+      p_role: editUser.role,
+      p_scope: editUser.admin_scope ?? null,
+    });
+
+    if (roleError) {
+      setSaving(false);
+      const msg = roleError.message ?? '';
+      if (msg.includes('own role')) {
+        setAlert({ type: 'error', text: 'No puedes cambiar tu propio rol. Pide a otro administrador que lo haga.' });
+      } else if (msg.includes('Permission denied')) {
+        setAlert({ type: 'error', text: 'No tienes permisos para cambiar roles.' });
+      } else {
+        setAlert({ type: 'error', text: 'Error al actualizar el rol del usuario.' });
+      }
+      return;
     }
+
+    const { error: activeError } = await supabase.rpc('set_user_active', {
+      p_user_id: editUser.id,
+      p_active: editUser.is_active,
+    });
+
+    setSaving(false);
+    if (activeError) {
+      const msg = activeError.message ?? '';
+      if (msg.includes('own active')) {
+        setAlert({ type: 'error', text: 'No puedes cambiar tu propio estado. Pide a otro administrador.' });
+      } else {
+        setAlert({ type: 'error', text: 'Error al actualizar el estado del usuario.' });
+      }
+      return;
+    }
+
+    setAlert({ type: 'success', text: 'Usuario actualizado correctamente.' });
+    setEditUser(null);
+    load();
   };
 
   return (
@@ -160,6 +189,18 @@ export default function AdminUsers() {
                 { value: 'admin', label: 'Administrador' },
               ]}
             />
+            {editUser.role === 'admin' && (
+              <Select
+                label="Alcance del admin"
+                value={editUser.admin_scope ?? ''}
+                onChange={(e) => setEditUser({ ...editUser, admin_scope: (e.target.value || null) as Profile['admin_scope'] })}
+                options={[
+                  { value: '', label: 'Ambos (Llave GT + Escuela)' },
+                  { value: 'llave_gt', label: 'Solo Llave GT' },
+                  { value: 'escuela', label: 'Solo Escuela' },
+                ]}
+              />
+            )}
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"

@@ -79,7 +79,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         job_title: meta.job_title ?? '',
         country: meta.country ?? '',
         city: meta.city ?? '',
-        role: 'participant' as const,
       };
       await supabase.from('profiles').insert(profileData);
       // Fetch the newly created profile so the context is populated before the

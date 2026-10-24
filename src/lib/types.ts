@@ -16,6 +16,7 @@ export interface Database {
           city?: string;
           avatar_url?: string;
           role?: 'participant' | 'coordinator' | 'admin';
+          admin_scope?: 'llave_gt' | 'escuela' | null;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -30,6 +31,7 @@ export interface Database {
           city?: string;
           avatar_url?: string;
           role?: 'participant' | 'coordinator' | 'admin';
+          admin_scope?: 'llave_gt' | 'escuela' | null;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -53,6 +55,7 @@ export interface Profile {
   city: string;
   avatar_url: string;
   role: 'participant' | 'coordinator' | 'admin';
+  admin_scope: 'llave_gt' | 'escuela' | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
