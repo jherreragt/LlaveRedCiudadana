@@ -50,7 +50,7 @@ export default function VerifyEmail() {
             <Shield size={28} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">Verifica tu correo</h1>
-          <p className="text-slate-400 text-sm mt-1">Llave GT Ciudadana</p>
+          <p className="text-slate-400 text-sm mt-1">Llave GT</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">

@@ -59,7 +59,7 @@ export default function Register() {
             <div className="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
               <Shield size={28} className="text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white">Llave GT Ciudadana</h1>
+            <h1 className="text-2xl font-bold text-white">Llave GT</h1>
           </div>
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
             <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -91,12 +91,12 @@ export default function Register() {
             <Shield size={24} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">Crear cuenta</h1>
-          <p className="text-slate-400 text-sm mt-1">Llave GT — Identidad Ciudadana Digital</p>
+          <p className="text-slate-400 text-sm mt-1">Tu identidad digital para acceder a servicios y plataformas</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <h2 className="text-lg font-semibold text-slate-900 mb-1">Información personal</h2>
-          <p className="text-sm text-slate-500 mb-6">Crea tu identidad digital ciudadana</p>
+          <p className="text-sm text-slate-500 mb-6">Crea tu identidad digital</p>
 
           {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-4" />}
 
@@ -119,7 +119,7 @@ export default function Register() {
                 />
                 <span className="text-xs text-slate-600 leading-relaxed">
                   Acepto el <a href="#" className="text-teal-700 font-medium hover:underline">aviso de privacidad</a> y los{' '}
-                  <a href="#" className="text-teal-700 font-medium hover:underline">términos y condiciones</a> de Llave GT Ciudadana.
+                  <a href="#" className="text-teal-700 font-medium hover:underline">términos y condiciones</a> de Llave GT.
                   Mis datos serán tratados conforme a la legislación aplicable.
                 </span>
               </label>

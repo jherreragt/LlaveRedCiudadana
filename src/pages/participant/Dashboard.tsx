@@ -47,8 +47,8 @@ export default function Dashboard() {
     <DashboardLayout>
       {/* Welcome */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}, {profile?.full_name?.split(' ')[0] ?? 'ciudadano'}</h1>
-        <p className="text-slate-500 text-sm mt-1">Este es tu portal de identidad ciudadana.</p>
+        <h1 className="text-2xl font-bold text-slate-900">{greeting}, {profile?.full_name?.split(' ')[0] ?? ''}</h1>
+        <p className="text-slate-500 text-sm mt-1">Este es tu panel de identidad digital.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

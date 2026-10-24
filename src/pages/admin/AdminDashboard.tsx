@@ -59,8 +59,8 @@ export default function AdminDashboard() {
   return (
     <AdminLayout>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Panel de Administración</h1>
-        <p className="text-slate-500 text-sm mt-1">Resumen del sistema Llave GT Ciudadana</p>
+        <h1 className="text-2xl font-bold text-slate-900">Resumen de cuentas</h1>
+        <p className="text-slate-500 text-sm mt-1">Resumen de cuentas del sistema Llave GT</p>
       </div>
 
       {/* Stats grid */}

@@ -71,8 +71,8 @@ export default function Login() {
           <div className="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Shield size={28} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">Llave GT Ciudadana</h1>
-          <p className="text-slate-400 text-sm mt-1">Identidad Ciudadana Digital</p>
+          <h1 className="text-2xl font-bold text-white">Llave GT</h1>
+          <p className="text-slate-400 text-sm mt-1">Tu identidad digital</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Shield, LayoutDashboard, User, LogOut, Menu, X
+  Shield, LayoutDashboard, User, Lock, Plug, Activity, LogOut, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getInitials } from '../../lib/utils';
-import { clsx } from '../../lib/utils';
+import { getInitials, clsx } from '../../lib/utils';
 
 const navItems = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Inicio' },
-  { to: '/perfil', icon: User, label: 'Mi Perfil' },
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Mi identidad' },
+  { to: '/perfil', icon: User, label: 'Datos personales' },
+  { to: '/seguridad', icon: Lock, label: 'Seguridad' },
+  { to: '/aplicaciones', icon: Plug, label: 'Aplicaciones conectadas' },
+  { to: '/actividad', icon: Activity, label: 'Actividad de seguridad' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -27,15 +29,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Top bar */}
       <header className="bg-white border-b border-slate-200 h-16 flex items-center px-4 sm:px-6 lg:px-8 gap-4 sticky top-0 z-30">
-        <Link to="/" className="flex items-center gap-2 font-bold text-slate-900">
+        <Link to="/" className="flex items-center gap-2 font-bold text-slate-900" aria-label="Llave GT, inicio">
           <div className="w-7 h-7 bg-teal-700 rounded-lg flex items-center justify-center">
             <Shield size={14} className="text-white" />
           </div>
-          <span className="hidden sm:block text-sm">Llave GT Ciudadana</span>
+          <span className="hidden sm:block text-sm">Llave GT</span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 ml-4">
+        <nav className="hidden md:flex items-center gap-1 ml-4" aria-label="Navegación principal">
           {navItems.map(({ to, icon: Icon, label }) => {
             const active = location.pathname === to;
             return (
@@ -57,7 +59,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="ml-auto flex items-center gap-3">
           {/* Avatar */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-teal-700 rounded-full flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-8 h-8 bg-teal-700 rounded-full flex items-center justify-center text-white text-xs font-bold" aria-hidden="true">
               {getInitials(profile?.full_name || 'U')}
             </div>
             <span className="hidden md:block text-sm font-medium text-slate-700 max-w-[120px] truncate">
@@ -67,6 +69,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <button
             onClick={handleSignOut}
             className="hidden md:flex items-center gap-1.5 text-sm text-slate-500 hover:text-red-600 transition-colors"
+            aria-label="Cerrar sesión"
           >
             <LogOut size={16} />
           </button>
@@ -74,6 +77,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <button
             className="md:hidden p-1.5 rounded-lg text-slate-600 hover:bg-slate-100"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label={mobileOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -88,7 +93,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               key={to}
               to={to}
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-100"
+              className={clsx(
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
+                location.pathname === to ? 'bg-teal-50 text-teal-700' : 'text-slate-700 hover:bg-slate-100'
+              )}
             >
               <Icon size={16} />
               {label}

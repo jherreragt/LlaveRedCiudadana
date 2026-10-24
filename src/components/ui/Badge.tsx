@@ -36,16 +36,13 @@ export default function Badge({ children, color = 'teal', className }: BadgeProp
 export function statusBadge(status: string) {
   const map: Record<string, { label: string; color: Color }> = {
     active: { label: 'Activo', color: 'green' },
-    draft: { label: 'Borrador', color: 'gray' },
-    completed: { label: 'Finalizado', color: 'blue' },
+    inactive: { label: 'Inactivo', color: 'gray' },
     pending: { label: 'Pendiente', color: 'amber' },
-    cancelled: { label: 'Cancelado', color: 'red' },
+    authorized: { label: 'Autorizado', color: 'green' },
+    revoked: { label: 'Revocado', color: 'red' },
     participant: { label: 'Participante', color: 'teal' },
     coordinator: { label: 'Coordinador', color: 'blue' },
     admin: { label: 'Administrador', color: 'slate' },
-    presencial: { label: 'Presencial', color: 'teal' },
-    virtual: { label: 'Virtual', color: 'blue' },
-    hibrido: { label: 'Híbrido', color: 'amber' },
   };
   const cfg = map[status] ?? { label: status, color: 'gray' as Color };
   return <Badge color={cfg.color}>{cfg.label}</Badge>;

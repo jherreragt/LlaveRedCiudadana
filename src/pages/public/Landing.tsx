@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Shield, ArrowRight, KeyRound, UserCheck, Building2, Globe } from 'lucide-react';
+import { Shield, ArrowRight, KeyRound, UserCheck, Lock, Globe } from 'lucide-react';
 import PublicLayout from '../../components/layout/PublicLayout';
 import Button from '../../components/ui/Button';
 
@@ -7,30 +7,29 @@ const features = [
   {
     icon: KeyRound,
     title: 'Identidad Digital Única',
-    desc: 'Una sola cuenta verifica tu identidad institucional. Sin registros duplicados ni información dispersa.',
+    desc: 'Una sola cuenta verifica tu identidad. Sin registros duplicados ni información dispersa entre plataformas.',
   },
   {
     icon: UserCheck,
     title: 'Perfil Verificable',
-    desc: 'Mantén tu información personal, organización y cargo siempre actualizados y disponibles.',
+    desc: 'Mantén tu información personal siempre actualizada y disponible para las aplicaciones que autorices.',
   },
   {
-    icon: Building2,
-    title: 'Vínculo Institucional',
-    desc: 'Conecta tu perfil con tu organización y fortalece tu presencia dentro de la red ciudadana.',
+    icon: Lock,
+    title: 'Control y Seguridad',
+    desc: 'Decides qué aplicaciones pueden acceder a tu información. Revoca permisos en cualquier momento.',
   },
   {
     icon: Globe,
     title: 'Red Ciudadana',
-    desc: 'Forma parte de la comunidad de participación ciudadana en Guatemala y América Latina.',
+    desc: 'Forma parte del ecosistema de participación ciudadana de Red Ciudadana en Guatemala.',
   },
 ];
 
-const stats = [
-  { value: '500+', label: 'Ciudadanos registrados' },
-  { value: '50+', label: 'Organizaciones vinculadas' },
-  { value: '12', label: 'Departamentos alcanzados' },
-  { value: '1', label: 'Identidad digital unificada' },
+const steps = [
+  { step: '1', title: 'Regístrate', desc: 'Crea tu cuenta con tu correo electrónico. No necesitas ningún documento.' },
+  { step: '2', title: 'Verifica tu correo', desc: 'Confirma tu identidad con el enlace que enviamos a tu correo.' },
+  { step: '3', title: 'Conecta y usa', desc: 'Autoriza aplicaciones conectadas y accede con tu identidad Llave GT.' },
 ];
 
 export default function Landing() {
@@ -43,15 +42,16 @@ export default function Landing() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 bg-teal-700/30 border border-teal-600/30 rounded-full px-4 py-1.5 text-teal-300 text-sm mb-6">
             <Shield size={14} />
-            Identidad Ciudadana Digital
+            Identidad Digital
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
             Tu identidad digital
             <br />
-            <span className="text-teal-400">para la ciudadanía activa</span>
+            <span className="text-teal-400">para acceder a servicios y plataformas</span>
           </h1>
           <p className="mt-6 text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Llave GT es la plataforma de identidad digital que unifica tu perfil ciudadano en un solo lugar. Verifica tu identidad, conecta con tu organización y participa en la red ciudadana.
+            Llave GT es la plataforma de identidad digital que te permite acceder a servicios y
+            plataformas de manera sencilla y segura. Un proyecto de Red Ciudadana para Guatemala.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" onClick={() => navigate('/registro')} icon={<ArrowRight size={18} />}>
@@ -62,20 +62,9 @@ export default function Landing() {
               Ya tengo cuenta
             </Button>
           </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="bg-white border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            {stats.map((s) => (
-              <div key={s.label}>
-                <div className="text-3xl font-extrabold text-teal-700">{s.value}</div>
-                <div className="text-sm text-slate-500 mt-1">{s.label}</div>
-              </div>
-            ))}
-          </div>
+          <p className="mt-6 text-xs text-slate-400">
+            Un proyecto de Red Ciudadana
+          </p>
         </div>
       </section>
 
@@ -84,7 +73,7 @@ export default function Landing() {
         <div className="text-center mb-14">
           <h2 className="text-3xl font-bold text-slate-900">Una sola identidad, muchas posibilidades</h2>
           <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-            Diseñada para fortalecer la participación ciudadana mediante una identidad digital verificable y segura.
+            Diseñada para que accedas a plataformas y servicios con una cuenta verificable y segura.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -105,14 +94,10 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-bold text-slate-900">Cómo funciona</h2>
-            <p className="text-slate-500 mt-3">Tres pasos para tener tu identidad ciudadana digital</p>
+            <p className="text-slate-500 mt-3">Tres pasos para tener tu identidad digital</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { step: '1', title: 'Regístrate', desc: 'Crea tu cuenta con tu correo y completa tu perfil institucional.' },
-              { step: '2', title: 'Verifica tu identidad', desc: 'Mantén tu información personal y organizacional siempre actualizada.' },
-              { step: '3', title: 'Participa', desc: 'Usa tu identidad digital para formar parte de la red ciudadana.' },
-            ].map(({ step, title, desc }) => (
+            {steps.map(({ step, title, desc }) => (
               <div key={step} className="text-center">
                 <div className="w-14 h-14 bg-teal-700 rounded-2xl flex items-center justify-center text-white text-xl font-bold mx-auto mb-4 shadow-lg">
                   {step}
@@ -121,6 +106,11 @@ export default function Landing() {
                 <p className="text-sm text-slate-500 leading-relaxed max-w-xs mx-auto">{desc}</p>
               </div>
             ))}
+          </div>
+          <div className="text-center mt-10">
+            <Button variant="outline" onClick={() => navigate('/como-funciona')} icon={<ArrowRight size={16} />}>
+              Ver más detalles
+            </Button>
           </div>
         </div>
       </section>
@@ -132,7 +122,7 @@ export default function Landing() {
             Únete a la red ciudadana
           </h2>
           <p className="text-teal-100 mb-8 max-w-xl mx-auto">
-            Crea tu identidad digital ciudadana y forma parte de la comunidad de participación en Guatemala.
+            Crea tu identidad digital y forma parte de la comunidad de Red Ciudadana en Guatemala.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button

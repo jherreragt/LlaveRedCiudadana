@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Shield, LayoutDashboard, Users, ChevronLeft, ChevronRight, LogOut
+  Shield, LayoutDashboard, Plug, ScrollText, Settings, ChevronLeft, ChevronRight, LogOut, Users
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import { clsx } from '../../lib/utils';
 
 const navItems = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Panel General' },
+  { to: '/admin', icon: LayoutDashboard, label: 'Resumen de cuentas' },
   { to: '/admin/usuarios', icon: Users, label: 'Usuarios' },
+  { to: '/admin/aplicaciones', icon: Plug, label: 'Aplicaciones autorizadas' },
+  { to: '/admin/auditoria', icon: ScrollText, label: 'Auditoría' },
+  { to: '/admin/configuracion', icon: Settings, label: 'Configuración' },
 ];
 
 export default function AdminSidebar() {
@@ -41,7 +43,7 @@ export default function AdminSidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 py-4 overflow-y-auto">
+      <nav className="flex-1 py-4 overflow-y-auto" aria-label="Navegación de administración">
         {navItems.map(({ to, icon: Icon, label }) => {
           const active = location.pathname === to || (to !== '/admin' && location.pathname.startsWith(to));
           return (

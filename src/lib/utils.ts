@@ -1,6 +1,6 @@
 export function formatDate(date: string | null | undefined): string {
   if (!date) return '—';
-  return new Date(date).toLocaleDateString('es-MX', {
+  return new Date(date).toLocaleDateString('es-GT', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -9,7 +9,7 @@ export function formatDate(date: string | null | undefined): string {
 
 export function formatDateTime(date: string | null | undefined): string {
   if (!date) return '—';
-  return new Date(date).toLocaleString('es-MX', {
+  return new Date(date).toLocaleString('es-GT', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -20,7 +20,7 @@ export function formatDateTime(date: string | null | undefined): string {
 
 export function formatShortDate(date: string | null | undefined): string {
   if (!date) return '—';
-  return new Date(date).toLocaleDateString('es-MX', {
+  return new Date(date).toLocaleDateString('es-GT', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -38,38 +38,6 @@ export function getInitials(name: string): string {
 
 export function clsx(...classes: (string | boolean | undefined | null)[]): string {
   return classes.filter(Boolean).join(' ');
-}
-
-export function attendanceColor(pct: number): string {
-  if (pct >= 80) return 'text-emerald-600';
-  if (pct >= 60) return 'text-amber-600';
-  return 'text-red-600';
-}
-
-export function attendanceBg(pct: number): string {
-  if (pct >= 80) return 'bg-emerald-100 text-emerald-700';
-  if (pct >= 60) return 'bg-amber-100 text-amber-700';
-  return 'bg-red-100 text-red-700';
-}
-
-export function modalityLabel(modality: string): string {
-  const map: Record<string, string> = {
-    presencial: 'Presencial',
-    virtual: 'Virtual',
-    hibrido: 'Híbrido',
-  };
-  return map[modality] ?? modality;
-}
-
-export function statusLabel(status: string): string {
-  const map: Record<string, string> = {
-    draft: 'Borrador',
-    active: 'Activo',
-    completed: 'Finalizado',
-    pending: 'Pendiente',
-    cancelled: 'Cancelado',
-  };
-  return map[status] ?? status;
 }
 
 export function downloadCSV(data: Record<string, unknown>[], filename: string): void {
