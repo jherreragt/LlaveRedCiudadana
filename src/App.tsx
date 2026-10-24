@@ -7,6 +7,7 @@ import Landing from './pages/public/Landing';
 import WhatIs from './pages/public/WhatIs';
 import HowItWorks from './pages/public/HowItWorks';
 import Privacy from './pages/public/Privacy';
+import PrivacyNotice from './pages/public/PrivacyNotice';
 import Developers from './pages/public/Developers';
 
 // Auth pages
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="/que-es" element={<WhatIs />} />
           <Route path="/como-funciona" element={<HowItWorks />} />
           <Route path="/privacidad" element={<Privacy />} />
+          <Route path="/aviso-privacidad" element={<PrivacyNotice />} />
           <Route path="/desarrolladores" element={<Developers />} />
 
           {/* Auth */}

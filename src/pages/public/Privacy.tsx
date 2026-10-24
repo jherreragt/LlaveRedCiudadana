@@ -71,13 +71,18 @@ export default function Privacy() {
 
       <section className="bg-slate-50 border-y border-slate-100 py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold text-slate-900 mb-3">¿Tienes dudas de seguridad?</h2>
-          <p className="text-slate-500 mb-6">
-            Crea tu cuenta y explora las herramientas de seguridad disponibles.
+          <h2 className="text-2xl font-bold text-slate-900 mb-3">Aviso de privacidad</h2>
+          <p className="text-slate-500 mb-6 max-w-xl mx-auto">
+            Consulta el documento legal completo sobre cómo recopilamos, usamos y protegemos tus datos.
           </p>
-          <Button size="lg" variant="outline" onClick={() => navigate('/registro')} icon={<ArrowRight size={18} />}>
-            Crear cuenta
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" variant="outline" onClick={() => navigate('/aviso-privacidad')} icon={<ArrowRight size={18} />}>
+              Leer aviso de privacidad
+            </Button>
+            <Button size="lg" onClick={() => navigate('/registro')} icon={<ArrowRight size={18} />}>
+              Crear cuenta
+            </Button>
+          </div>
         </div>
       </section>
     </PublicLayout>

@@ -16,7 +16,13 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </div>
               <p className="text-xs text-slate-500">Un proyecto de Red Ciudadana</p>
             </div>
-            <p className="text-sm text-slate-500">© {new Date().getFullYear()} Red Ciudadana. Todos los derechos reservados.</p>
+            <div className="flex flex-col items-center md:items-end gap-2">
+              <div className="flex gap-4 text-xs">
+                <a href="/aviso-privacidad" className="text-slate-400 hover:text-white transition-colors">Aviso de privacidad</a>
+                <a href="/desarrolladores" className="text-slate-400 hover:text-white transition-colors">Desarrolladores</a>
+              </div>
+              <p className="text-sm text-slate-500">© {new Date().getFullYear()} Red Ciudadana. Todos los derechos reservados.</p>
+            </div>
           </div>
         </div>
       </footer>
