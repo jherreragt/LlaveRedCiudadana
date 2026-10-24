@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Shield } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -11,9 +11,11 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
+  const [cooldown, setCooldown] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (cooldown > 0) return;
     setError('');
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -21,9 +23,15 @@ export default function ForgotPassword() {
     });
     setLoading(false);
     if (error) {
-      setError('No pudimos enviar el correo. Verifica la dirección e intenta de nuevo.');
+      const msg = error.message.toLowerCase();
+      if (msg.includes('rate limit') || msg.includes('too many')) {
+        setError('Demasiados intentos. Espera unos minutos antes de solicitar otro enlace.');
+      } else {
+        setError('No pudimos enviar el correo. Verifica la dirección e intenta de nuevo.');
+      }
     } else {
       setSent(true);
+      setCooldown(60);
     }
   };
 
@@ -43,13 +51,23 @@ export default function ForgotPassword() {
               <div className="w-14 h-14 bg-teal-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Mail size={24} className="text-teal-600" />
               </div>
-              <h3 className="font-semibold text-slate-900 mb-2">¡Correo enviado!</h3>
-              <p className="text-sm text-slate-500">
-                Revisa tu bandeja de entrada en <strong>{email}</strong> y sigue las instrucciones para restablecer tu contraseña.
+              <h3 className="font-semibold text-slate-900 mb-2">Correo enviado</h3>
+              <p className="text-sm text-slate-500 leading-relaxed mb-6">
+                Revisa tu bandeja de entrada en <strong className="text-slate-900">{email}</strong> y sigue las instrucciones para crear una nueva contraseña.
+                El enlace expirará en breve, úsalo cuanto antes.
               </p>
-              <Link to="/ingresar" className="mt-5 block text-sm text-teal-700 font-medium hover:underline">
-                Volver al inicio de sesión
-              </Link>
+              <div className="space-y-3">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => { setSent(false); setCooldown(0); }}
+                >
+                  Usar otro correo
+                </Button>
+                <Link to="/ingresar" className="block text-sm text-teal-700 font-medium hover:underline">
+                  ← Volver al inicio de sesión
+                </Link>
+              </div>
             </div>
           ) : (
             <>
@@ -70,8 +88,8 @@ export default function ForgotPassword() {
                   icon={<Mail size={16} />}
                   placeholder="tu@correo.com"
                 />
-                <Button type="submit" className="w-full" loading={loading}>
-                  Enviar enlace de recuperación
+                <Button type="submit" className="w-full" loading={loading} disabled={cooldown > 0}>
+                  {cooldown > 0 ? `Espera ${cooldown}s` : 'Enviar enlace de recuperación'}
                 </Button>
               </form>
 

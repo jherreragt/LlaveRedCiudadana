@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Building2, Globe, MapPin, Phone, Briefcase, ArrowRight, Shield, CheckCircle } from 'lucide-react';
+import { User, Mail, Building2, Globe, MapPin, Phone, Briefcase, ArrowRight, Shield, CheckCircle, MailCheck, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import Spinner from '../../components/ui/Spinner';
@@ -16,7 +16,7 @@ interface ProfileField {
 }
 
 export default function Dashboard() {
-  const { profile, loading: authLoading } = useAuth();
+  const { profile, emailVerified, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
 
@@ -64,6 +64,15 @@ export default function Dashboard() {
               <p className="text-teal-100 text-sm mt-0.5">{profile?.email}</p>
               <div className="flex items-center justify-center gap-2 mt-3">
                 {statusBadge(profile?.role ?? 'participant')}
+                {emailVerified ? (
+                  <span className="inline-flex items-center gap-1 text-xs text-teal-100">
+                    <MailCheck size={12} /> Verificado
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-xs text-amber-200">
+                    <AlertTriangle size={12} /> Sin verificar
+                  </span>
+                )}
               </div>
             </div>
 

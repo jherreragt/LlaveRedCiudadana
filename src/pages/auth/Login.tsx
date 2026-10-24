@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,19 +13,55 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [needsVerification, setNeedsVerification] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error: signInError, needsVerification: shouldVerify } = await signIn(email, password);
     setLoading(false);
-    if (error) {
-      setError('Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo.');
+    if (shouldVerify) {
+      setNeedsVerification(true);
+      return;
+    }
+    if (signInError) {
+      setError(signInError);
     } else {
       navigate('/dashboard');
     }
   };
+
+  if (needsVerification) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Mail size={28} className="text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white">Verifica tu correo</h1>
+            <p className="text-slate-400 text-sm mt-1">Tu cuenta aún no está confirmada</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <p className="text-slate-600 text-sm leading-relaxed mb-6">
+              Necesitas confirmar tu correo electrónico antes de iniciar sesión.
+              Revisa tu bandeja de entrada en <strong className="text-slate-900">{email}</strong> y haz clic en el enlace de verificación.
+            </p>
+            <Link to={`/verificar-correo?email=${encodeURIComponent(email)}`}>
+              <Button className="w-full mb-3">Reenviar correo de verificación</Button>
+            </Link>
+            <button
+              onClick={() => setNeedsVerification(false)}
+              className="text-sm text-slate-500 hover:text-slate-700"
+            >
+              ← Volver al inicio de sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center p-4">
@@ -35,13 +71,13 @@ export default function Login() {
           <div className="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <Shield size={28} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-white">LlaveRed Ciudadana</h1>
-          <p className="text-slate-400 text-sm mt-1">Escuela Red Ciudadana</p>
+          <h1 className="text-2xl font-bold text-white">Llave GT Ciudadana</h1>
+          <p className="text-slate-400 text-sm mt-1">Identidad Ciudadana Digital</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <h2 className="text-xl font-semibold text-slate-900 mb-1">Bienvenido de vuelta</h2>
-          <p className="text-sm text-slate-500 mb-6">Ingresa a tu cuenta institucional</p>
+          <p className="text-sm text-slate-500 mb-6">Ingresa a tu cuenta ciudadana</p>
 
           {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-4" />}
 

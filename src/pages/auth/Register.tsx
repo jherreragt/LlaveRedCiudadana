@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, Building2, Briefcase, Globe, MapPin, Shield } from 'lucide-react';
+import { Mail, Lock, User, Shield, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -11,11 +11,12 @@ export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   const [form, setForm] = useState({
     full_name: '', email: '', password: '', confirm_password: '',
-    phone: '', organization: '', job_title: '', country: '', city: '',
   });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -31,89 +32,110 @@ export default function Register() {
       setError('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
+    if (!acceptedTerms) {
+      setError('Debes aceptar el aviso de privacidad y los términos para continuar.');
+      return;
+    }
     setLoading(true);
-    const { error } = await signUp(form.email, form.password, {
-      full_name: form.full_name,
-      phone: form.phone,
-      organization: form.organization,
-      job_title: form.job_title,
-      country: form.country,
-      city: form.city,
-    });
+    const { error: signUpError, needsVerification: shouldVerify } = await signUp(
+      form.email, form.password, form.full_name
+    );
     setLoading(false);
-    if (error) {
-      const msg = (error as { message?: string }).message ?? '';
-      if (msg.includes('already registered')) {
-        setError('Este correo ya está registrado. Intenta ingresar o recuperar tu contraseña.');
-      } else {
-        setError('Ocurrió un error al crear tu cuenta. Intenta de nuevo.');
-      }
+    if (signUpError) {
+      setError(signUpError);
+    } else if (shouldVerify) {
+      setRegisteredEmail(form.email);
+      setNeedsVerification(true);
     } else {
-      setSuccess(true);
-      setTimeout(() => navigate('/dashboard'), 2000);
+      navigate('/dashboard');
     }
   };
 
+  if (needsVerification) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center p-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Shield size={28} className="text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white">Llave GT Ciudadana</h1>
+          </div>
+          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle size={28} className="text-emerald-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-2">Verifica tu correo</h3>
+            <p className="text-slate-500 text-sm leading-relaxed mb-6">
+              Hemos enviado un correo de confirmación a <strong className="text-slate-900">{registeredEmail}</strong>.
+              Revisa tu bandeja de entrada (y la carpeta de spam) y haz clic en el enlace para verificar tu cuenta.
+            </p>
+            <Link to="/verificar-correo">
+              <Button className="w-full mb-3">Ir a la pantalla de verificación</Button>
+            </Link>
+            <Link to="/ingresar" className="text-sm text-teal-700 font-medium hover:underline">
+              Ya verifiqué mi correo — Iniciar sesión
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center p-4 py-12">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
             <Shield size={24} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-white">Crear cuenta</h1>
-          <p className="text-slate-400 text-sm mt-1">LlaveRed Ciudadana — Escuela Red Ciudadana</p>
+          <p className="text-slate-400 text-sm mt-1">Llave GT — Identidad Ciudadana Digital</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {success ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield size={28} className="text-emerald-600" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">¡Cuenta creada!</h3>
-              <p className="text-slate-500 text-sm mt-2">Redirigiendo a tu portal...</p>
+          <h2 className="text-lg font-semibold text-slate-900 mb-1">Información personal</h2>
+          <p className="text-sm text-slate-500 mb-6">Crea tu identidad digital ciudadana</p>
+
+          {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-4" />}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input label="Nombre completo" value={form.full_name} onChange={set('full_name')} required icon={<User size={16} />} placeholder="Ana García" />
+            <Input label="Correo electrónico" type="email" value={form.email} onChange={set('email')} required icon={<Mail size={16} />} placeholder="ana@correo.com" />
+            <div className="grid grid-cols-1 gap-4">
+              <Input label="Contraseña" type="password" value={form.password} onChange={set('password')} required icon={<Lock size={16} />} placeholder="Mínimo 8 caracteres" />
+              <Input label="Confirmar contraseña" type="password" value={form.confirm_password} onChange={set('confirm_password')} required icon={<Lock size={16} />} placeholder="Repite tu contraseña" />
             </div>
-          ) : (
-            <>
-              <h2 className="text-lg font-semibold text-slate-900 mb-1">Información personal</h2>
-              <p className="text-sm text-slate-500 mb-6">Completa tu perfil institucional</p>
 
-              {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-4" />}
+            {/* Terms acceptance */}
+            <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                <span className="text-xs text-slate-600 leading-relaxed">
+                  Acepto el <a href="#" className="text-teal-700 font-medium hover:underline">aviso de privacidad</a> y los{' '}
+                  <a href="#" className="text-teal-700 font-medium hover:underline">términos y condiciones</a> de Llave GT Ciudadana.
+                  Mis datos serán tratados conforme a la legislación aplicable.
+                </span>
+              </label>
+            </div>
 
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input label="Nombre completo" value={form.full_name} onChange={set('full_name')} required icon={<User size={16} />} placeholder="Ana García" />
-                  <Input label="Correo electrónico" type="email" value={form.email} onChange={set('email')} required icon={<Mail size={16} />} placeholder="ana@correo.com" />
-                  <Input label="Contraseña" type="password" value={form.password} onChange={set('password')} required icon={<Lock size={16} />} placeholder="Mínimo 8 caracteres" />
-                  <Input label="Confirmar contraseña" type="password" value={form.confirm_password} onChange={set('confirm_password')} required icon={<Lock size={16} />} placeholder="Repite tu contraseña" />
-                </div>
+            <Button type="submit" className="w-full" loading={loading} size="lg">
+              Crear mi cuenta
+            </Button>
+          </form>
 
-                <div className="border-t border-slate-100 pt-4">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Información institucional (opcional)</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Input label="Teléfono" type="tel" value={form.phone} onChange={set('phone')} icon={<Phone size={16} />} placeholder="+52 55 0000 0000" />
-                    <Input label="Organización" value={form.organization} onChange={set('organization')} icon={<Building2 size={16} />} placeholder="Tu organización" />
-                    <Input label="Cargo o función" value={form.job_title} onChange={set('job_title')} icon={<Briefcase size={16} />} placeholder="Coordinador, Director..." />
-                    <Input label="País" value={form.country} onChange={set('country')} icon={<Globe size={16} />} placeholder="México" />
-                    <Input label="Ciudad" value={form.city} onChange={set('city')} icon={<MapPin size={16} />} placeholder="Ciudad de México" className="sm:col-span-1" />
-                  </div>
-                </div>
-
-                <Button type="submit" className="w-full" loading={loading} size="lg">
-                  Crear mi cuenta
-                </Button>
-              </form>
-
-              <p className="mt-5 text-center text-sm text-slate-600">
-                ¿Ya tienes cuenta?{' '}
-                <Link to="/ingresar" className="text-teal-700 font-medium hover:underline">
-                  Ingresar aquí
-                </Link>
-              </p>
-            </>
-          )}
+          <p className="mt-5 text-center text-sm text-slate-600">
+            ¿Ya tienes cuenta?{' '}
+            <Link to="/ingresar" className="text-teal-700 font-medium hover:underline">
+              Ingresar aquí
+            </Link>
+          </p>
         </div>
 
         <p className="text-center text-xs text-slate-500 mt-6">
