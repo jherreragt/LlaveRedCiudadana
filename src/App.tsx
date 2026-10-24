@@ -19,6 +19,10 @@ import ResetPassword from './pages/auth/ResetPassword';
 // OAuth
 import OAuthConsent from './pages/oauth/Consent';
 
+// Demo client app
+import DemoWelcome from './demo/pages/DemoWelcome';
+import DemoCallback from './demo/pages/DemoCallback';
+
 // Participant pages
 import Dashboard from './pages/participant/Dashboard';
 import Profile from './pages/participant/Profile';
@@ -54,6 +58,10 @@ export default function App() {
 
           {/* OAuth */}
           <Route path="/oauth/consent" element={<OAuthConsent />} />
+
+          {/* Demo client app (independent OIDC client) */}
+          <Route path="/demo" element={<DemoWelcome />} />
+          <Route path="/demo/callback" element={<DemoCallback />} />
 
           {/* Participant (protected) */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

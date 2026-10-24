@@ -240,6 +240,9 @@ grant_type=authorization_code
           <Button size="lg" onClick={() => navigate('/registro')} className="bg-white text-teal-700 hover:bg-teal-50" icon={<ArrowRight size={18} />}>
             Crear cuenta de desarrollador
           </Button>
+          <Button size="lg" variant="ghost" onClick={() => navigate('/demo')} className="text-white hover:bg-teal-600 border border-white/30">
+            Ver demo de integración
+          </Button>
         </div>
       </section>
     </PublicLayout>
