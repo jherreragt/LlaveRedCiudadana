@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Shield, LayoutDashboard, Users, BookOpen, Calendar, ClipboardList,
-  CheckSquare, Award, BarChart2, ChevronLeft, ChevronRight, LogOut
+  Shield, LayoutDashboard, Users, ChevronLeft, ChevronRight, LogOut
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +10,6 @@ import { clsx } from '../../lib/utils';
 const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'Panel General' },
   { to: '/admin/usuarios', icon: Users, label: 'Usuarios' },
-  { to: '/admin/cursos', icon: BookOpen, label: 'Cursos' },
-  { to: '/admin/sesiones', icon: Calendar, label: 'Sesiones' },
-  { to: '/admin/inscripciones', icon: ClipboardList, label: 'Inscripciones' },
-  { to: '/admin/asistencia', icon: CheckSquare, label: 'Asistencia' },
-  { to: '/admin/certificados', icon: Award, label: 'Certificados' },
 ];
 
 export default function AdminSidebar() {
@@ -41,7 +35,7 @@ export default function AdminSidebar() {
         <Shield size={20} className="text-teal-400 shrink-0" />
         {!collapsed && (
           <span className="ml-2.5 font-bold text-sm">
-            LlaveRed <span className="text-teal-400">Admin</span>
+            Llave GT <span className="text-teal-400">Admin</span>
           </span>
         )}
       </div>

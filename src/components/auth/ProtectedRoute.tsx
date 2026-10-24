@@ -14,7 +14,7 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, profile, loading } = useAuth();
   if (loading) return <PageSpinner />;
   if (!user) return <Navigate to="/ingresar" replace />;
-  if (profile && profile.role !== 'admin' && profile.role !== 'coordinator') {
+  if (profile && profile.role !== 'admin') {
     return <Navigate to="/dashboard" replace />;
   }
   return <>{children}</>;

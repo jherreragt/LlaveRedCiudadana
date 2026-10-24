@@ -1,183 +1,161 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Award, CheckSquare, ArrowRight, TrendingUp, Calendar } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { User, Mail, Building2, Globe, MapPin, Phone, Briefcase, ArrowRight, Shield, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
-import type { EnrollmentWithCourse, CertificateWithCourse } from '../../lib/types';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import Spinner from '../../components/ui/Spinner';
-import { attendanceBg, formatShortDate } from '../../lib/utils';
+import Button from '../../components/ui/Button';
+import { formatDate, getInitials } from '../../lib/utils';
 import { statusBadge } from '../../components/ui/Badge';
 
-interface Stats {
-  enrollments: number;
-  certificates: number;
-  avgAttendance: number;
+interface ProfileField {
+  icon: React.ReactNode;
+  label: string;
+  value: string | null;
+  key: string;
 }
 
 export default function Dashboard() {
   const { profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState<Stats>({ enrollments: 0, certificates: 0, avgAttendance: 0 });
-  const [recentEnrollments, setRecentEnrollments] = useState<EnrollmentWithCourse[]>([]);
-  const [certificates, setCertificates] = useState<CertificateWithCourse[]>([]);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!profile) { setLoading(false); return; }
-    Promise.all([
-      supabase.from('enrollments').select('*, courses(*)').eq('user_id', profile.id).order('enrolled_at', { ascending: false }).limit(4),
-      supabase.from('certificates').select('*, courses(*)').eq('user_id', profile.id).order('issued_at', { ascending: false }).limit(3),
-      supabase.from('attendance_records').select('attended').eq('user_id', profile.id),
-    ]).then(([{ data: enr }, { data: certs }, { data: att }]) => {
-      const attended = (att ?? []).filter((a) => a.attended).length;
-      const total = (att ?? []).length;
-      setRecentEnrollments((enr ?? []) as EnrollmentWithCourse[]);
-      setCertificates((certs ?? []) as CertificateWithCourse[]);
-      setStats({
-        enrollments: enr?.length ?? 0,
-        certificates: certs?.length ?? 0,
-        avgAttendance: total > 0 ? Math.round((attended / total) * 100) : 0,
-      });
-      setLoading(false);
-    });
-  }, [profile, authLoading]);
+    if (!authLoading) setLoading(false);
+  }, [authLoading]);
 
   if (loading) return <DashboardLayout><div className="flex justify-center py-20"><Spinner size={36} /></div></DashboardLayout>;
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Buenos días' : hour < 18 ? 'Buenas tardes' : 'Buenas noches';
 
+  const fields: ProfileField[] = [
+    { icon: <Mail size={16} />, label: 'Correo', value: profile?.email ?? '', key: 'email' },
+    { icon: <Phone size={16} />, label: 'Teléfono', value: profile?.phone ?? '', key: 'phone' },
+    { icon: <Building2 size={16} />, label: 'Organización', value: profile?.organization ?? '', key: 'organization' },
+    { icon: <Briefcase size={16} />, label: 'Cargo', value: profile?.job_title ?? '', key: 'job_title' },
+    { icon: <Globe size={16} />, label: 'País', value: profile?.country ?? '', key: 'country' },
+    { icon: <MapPin size={16} />, label: 'Ciudad', value: profile?.city ?? '', key: 'city' },
+  ];
+
+  const filledCount = fields.filter((f) => f.value && f.value.trim() !== '').length;
+  const completionPct = Math.round((filledCount / fields.length) * 100);
+
+  const incompleteFields = fields.filter((f) => !f.value || f.value.trim() === '');
+
   return (
     <DashboardLayout>
       {/* Welcome */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">{greeting}, {profile?.full_name?.split(' ')[0] ?? 'participante'}</h1>
-        <p className="text-slate-500 text-sm mt-1">Aquí tienes un resumen de tu actividad formativa.</p>
+        <h1 className="text-2xl font-bold text-slate-900">{greeting}, {profile?.full_name?.split(' ')[0] ?? 'ciudadano'}</h1>
+        <p className="text-slate-500 text-sm mt-1">Este es tu portal de identidad ciudadana.</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
-        <StatCard
-          icon={<BookOpen size={20} className="text-teal-600" />}
-          label="Cursos inscritos"
-          value={stats.enrollments}
-          bg="bg-teal-50"
-          onClick={() => navigate('/mis-cursos')}
-        />
-        <StatCard
-          icon={<CheckSquare size={20} className="text-blue-600" />}
-          label="Asistencia promedio"
-          value={`${stats.avgAttendance}%`}
-          bg="bg-blue-50"
-        />
-        <StatCard
-          icon={<Award size={20} className="text-amber-600" />}
-          label="Certificados"
-          value={stats.certificates}
-          bg="bg-amber-50"
-          onClick={() => navigate('/mis-certificados')}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent courses */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
-          <div className="flex items-center justify-between p-5 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900 flex items-center gap-2"><BookOpen size={16} className="text-teal-600" /> Mis cursos recientes</h2>
-            <button onClick={() => navigate('/mis-cursos')} className="text-xs text-teal-700 font-medium hover:underline flex items-center gap-1">
-              Ver todos <ArrowRight size={12} />
-            </button>
-          </div>
-          <div className="divide-y divide-slate-50">
-            {recentEnrollments.length === 0 ? (
-              <div className="p-6 text-center">
-                <p className="text-sm text-slate-400">No tienes cursos inscritos aún.</p>
-                <button onClick={() => navigate('/cursos')} className="mt-2 text-sm text-teal-700 hover:underline">Explorar catálogo →</button>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Identity card */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden sticky top-20">
+            {/* Header */}
+            <div className="bg-gradient-to-br from-teal-700 to-teal-800 p-6 text-center">
+              <div className="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3 backdrop-blur">
+                {getInitials(profile?.full_name ?? 'U')}
               </div>
-            ) : (
-              recentEnrollments.map((e) => (
-                <div key={e.id} className="flex items-center gap-3 p-4 hover:bg-slate-50 transition-colors">
-                  <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center shrink-0">
-                    <BookOpen size={18} className="text-teal-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-slate-900 truncate">{e.courses?.title}</p>
-                    <p className="text-xs text-slate-400">{formatShortDate(e.enrolled_at)}</p>
-                  </div>
-                  {statusBadge(e.status)}
-                </div>
-              ))
-            )}
+              <h2 className="text-white font-bold text-lg">{profile?.full_name || '—'}</h2>
+              <p className="text-teal-100 text-sm mt-0.5">{profile?.email}</p>
+              <div className="flex items-center justify-center gap-2 mt-3">
+                {statusBadge(profile?.role ?? 'participant')}
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500">Miembro desde</span>
+                <span className="font-medium text-slate-900">{formatDate(profile?.created_at)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-500">Estado</span>
+                <span className={`flex items-center gap-1 font-medium ${profile?.is_active ? 'text-emerald-600' : 'text-red-500'}`}>
+                  {profile?.is_active ? <><CheckCircle size={14} /> Activo</> : 'Inactivo'}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                icon={<User size={15} />}
+                onClick={() => navigate('/perfil')}
+              >
+                Editar mi perfil
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Certificates + progress */}
-        <div className="space-y-5">
-          {/* Certificates */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
-              <h2 className="font-semibold text-slate-900 flex items-center gap-2"><Award size={16} className="text-amber-600" /> Certificados recientes</h2>
-              <button onClick={() => navigate('/mis-certificados')} className="text-xs text-teal-700 font-medium hover:underline flex items-center gap-1">
-                Ver todos <ArrowRight size={12} />
-              </button>
+        {/* Profile info + completion */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Completion progress */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+                <Shield size={18} className="text-teal-600" />
+                Completitud del perfil
+              </h2>
+              <span className={`text-2xl font-bold ${completionPct >= 80 ? 'text-emerald-600' : completionPct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
+                {completionPct}%
+              </span>
             </div>
-            <div className="p-4 space-y-3">
-              {certificates.length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-3">Aún no tienes certificados. Completa un curso para obtenerlo.</p>
-              ) : (
-                certificates.map((cert) => (
-                  <div key={cert.id} className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl">
-                    <Award size={18} className="text-amber-600 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-slate-900 truncate">{cert.courses?.title}</p>
-                      <p className="text-xs text-slate-500">{formatShortDate(cert.issued_at)}</p>
-                    </div>
-                    <span className="text-xs text-amber-700 font-medium">{cert.attendance_percentage}%</span>
-                  </div>
-                ))
-              )}
+            <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden mb-4">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${completionPct >= 80 ? 'bg-emerald-500' : completionPct >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                style={{ width: `${completionPct}%` }}
+              />
             </div>
+            {incompleteFields.length > 0 ? (
+              <div>
+                <p className="text-sm text-slate-500 mb-3">Completa estos campos para fortalecer tu identidad digital:</p>
+                <div className="flex flex-wrap gap-2">
+                  {incompleteFields.map((f) => (
+                    <span key={f.key} className="inline-flex items-center gap-1.5 text-xs bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg">
+                      {f.icon}
+                      {f.label}
+                    </span>
+                  ))}
+                </div>
+                <Button
+                  size="sm"
+                  className="mt-4"
+                  icon={<ArrowRight size={15} />}
+                  onClick={() => navigate('/perfil')}
+                >
+                  Completar perfil
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-emerald-600">
+                <CheckCircle size={18} />
+                <span className="font-medium">Tu perfil está completo</span>
+              </div>
+            )}
           </div>
 
-          {/* Quick actions */}
-          <div className="bg-gradient-to-br from-teal-700 to-teal-800 rounded-2xl p-5 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp size={18} className="text-teal-300" />
-              <h3 className="font-semibold text-sm">Continúa tu formación</h3>
+          {/* Profile details */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <h2 className="font-semibold text-slate-900 mb-5">Información de identidad</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {fields.map((f) => (
+                <div key={f.key} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50">
+                  <span className="text-slate-400 mt-0.5 shrink-0">{f.icon}</span>
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-400">{f.label}</p>
+                    <p className="text-sm font-medium text-slate-900 truncate">{f.value || '—'}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <p className="text-teal-100 text-xs mb-4 leading-relaxed">
-              Explora nuevos cursos y fortalece tus capacidades para la participación ciudadana.
-            </p>
-            <button
-              onClick={() => navigate('/cursos')}
-              className="flex items-center gap-1.5 bg-white text-teal-700 text-xs font-semibold px-4 py-2 rounded-lg hover:bg-teal-50 transition-colors"
-            >
-              <Calendar size={14} /> Ver catálogo de cursos
-            </button>
           </div>
         </div>
       </div>
     </DashboardLayout>
-  );
-}
-
-function StatCard({
-  icon, label, value, bg, onClick,
-}: {
-  icon: React.ReactNode; label: string; value: number | string; bg: string; onClick?: () => void;
-}) {
-  return (
-    <div
-      onClick={onClick}
-      className={`bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4 ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
-    >
-      <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center shrink-0`}>{icon}</div>
-      <div>
-        <p className="text-2xl font-bold text-slate-900">{value}</p>
-        <p className="text-sm text-slate-500">{label}</p>
-      </div>
-    </div>
   );
 }

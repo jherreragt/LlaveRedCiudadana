@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Shield, LayoutDashboard, BookOpen, Award, User, LogOut, Menu, X
+  Shield, LayoutDashboard, User, LogOut, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { getInitials } from '../../lib/utils';
@@ -9,8 +9,6 @@ import { clsx } from '../../lib/utils';
 
 const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Inicio' },
-  { to: '/mis-cursos', icon: BookOpen, label: 'Mis Cursos' },
-  { to: '/mis-certificados', icon: Award, label: 'Certificados' },
   { to: '/perfil', icon: User, label: 'Mi Perfil' },
 ];
 
@@ -33,7 +31,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="w-7 h-7 bg-teal-700 rounded-lg flex items-center justify-center">
             <Shield size={14} className="text-white" />
           </div>
-          <span className="hidden sm:block text-sm">LlaveRed Ciudadana</span>
+          <span className="hidden sm:block text-sm">Llave GT Ciudadana</span>
         </Link>
 
         {/* Desktop nav */}
@@ -57,9 +55,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          <Link to="/cursos" className="hidden sm:block text-sm text-teal-700 font-medium hover:underline">
-            Ver cursos
-          </Link>
           {/* Avatar */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-teal-700 rounded-full flex items-center justify-center text-white text-xs font-bold">

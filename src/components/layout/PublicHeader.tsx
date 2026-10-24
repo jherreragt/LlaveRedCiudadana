@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Menu, X, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -22,16 +22,14 @@ export default function PublicHeader() {
           <div className="w-8 h-8 bg-teal-700 rounded-lg flex items-center justify-center">
             <Shield size={16} className="text-white" />
           </div>
-          <span>LlaveRed <span className="text-teal-700">Ciudadana</span></span>
+          <span>Llave GT <span className="text-teal-700">Ciudadana</span></span>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-          <Link to="/cursos" className="hover:text-teal-700 transition-colors">Cursos</Link>
-          <Link to="/verificar" className="hover:text-teal-700 transition-colors">Verificar Certificado</Link>
-          {profile?.role === 'admin' || profile?.role === 'coordinator' ? (
+          {profile?.role === 'admin' && (
             <Link to="/admin" className="hover:text-teal-700 transition-colors">Panel Admin</Link>
-          ) : null}
+          )}
         </nav>
 
         {/* Auth actions */}
@@ -74,8 +72,6 @@ export default function PublicHeader() {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-slate-100 bg-white px-4 py-3 flex flex-col gap-2">
-          <Link to="/cursos" className="py-2 text-sm text-slate-700" onClick={() => setMenuOpen(false)}>Cursos</Link>
-          <Link to="/verificar" className="py-2 text-sm text-slate-700" onClick={() => setMenuOpen(false)}>Verificar Certificado</Link>
           {user ? (
             <>
               <Button variant="ghost" size="sm" onClick={() => { navigate('/dashboard'); setMenuOpen(false); }}>Mi Portal</Button>
