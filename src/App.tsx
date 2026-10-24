@@ -7,6 +7,7 @@ import Landing from './pages/public/Landing';
 import WhatIs from './pages/public/WhatIs';
 import HowItWorks from './pages/public/HowItWorks';
 import Privacy from './pages/public/Privacy';
+import Developers from './pages/public/Developers';
 
 // Auth pages
 import Login from './pages/auth/Login';
@@ -14,6 +15,9 @@ import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import ResetPassword from './pages/auth/ResetPassword';
+
+// OAuth
+import OAuthConsent from './pages/oauth/Consent';
 
 // Participant pages
 import Dashboard from './pages/participant/Dashboard';
@@ -39,6 +43,7 @@ export default function App() {
           <Route path="/que-es" element={<WhatIs />} />
           <Route path="/como-funciona" element={<HowItWorks />} />
           <Route path="/privacidad" element={<Privacy />} />
+          <Route path="/desarrolladores" element={<Developers />} />
 
           {/* Auth */}
           <Route path="/ingresar" element={<Login />} />
@@ -46,6 +51,9 @@ export default function App() {
           <Route path="/verificar-correo" element={<VerifyEmail />} />
           <Route path="/recuperar-contrasena" element={<ForgotPassword />} />
           <Route path="/nueva-contrasena" element={<ResetPassword />} />
+
+          {/* OAuth */}
+          <Route path="/oauth/consent" element={<OAuthConsent />} />
 
           {/* Participant (protected) */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

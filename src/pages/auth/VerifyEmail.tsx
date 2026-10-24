@@ -16,11 +16,13 @@ export default function VerifyEmail() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [cooldown, setCooldown] = useState(0);
 
+  const redirectPath = searchParams.get('redirect');
+
   useEffect(() => {
     if (emailVerified && user) {
-      navigate('/dashboard');
+      navigate(redirectPath || '/dashboard');
     }
-  }, [emailVerified, user, navigate]);
+  }, [emailVerified, user, navigate, redirectPath]);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -101,7 +103,7 @@ export default function VerifyEmail() {
             <p className="text-xs text-slate-400 text-center mb-3">
               ¿Ya verificaste tu correo?
             </p>
-            <Link to="/ingresar" className="block">
+            <Link to={redirectPath ? `/ingresar?redirect=${encodeURIComponent(redirectPath)}` : '/ingresar'} className="block">
               <Button variant="outline" className="w-full">
                 Iniciar sesión
               </Button>

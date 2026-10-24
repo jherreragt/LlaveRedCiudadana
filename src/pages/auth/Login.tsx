@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Mail, Lock, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/ui/Button';
@@ -9,6 +9,8 @@ import Alert from '../../components/ui/Alert';
 export default function Login() {
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectPath = searchParams.get('redirect');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,17 +24,21 @@ export default function Login() {
     const { error: signInError, needsVerification: shouldVerify } = await signIn(email, password);
     setLoading(false);
     if (shouldVerify) {
+      const verifyRedirect = redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : '';
       setNeedsVerification(true);
       return;
     }
     if (signInError) {
       setError(signInError);
     } else {
-      navigate('/dashboard');
+      navigate(redirectPath || '/dashboard');
     }
   };
 
   if (needsVerification) {
+    const verifyLink = redirectPath
+      ? `/verificar-correo?email=${encodeURIComponent(email)}&redirect=${encodeURIComponent(redirectPath)}`
+      : `/verificar-correo?email=${encodeURIComponent(email)}`;
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
@@ -48,7 +54,7 @@ export default function Login() {
               Necesitas confirmar tu correo electrónico antes de iniciar sesión.
               Revisa tu bandeja de entrada en <strong className="text-slate-900">{email}</strong> y haz clic en el enlace de verificación.
             </p>
-            <Link to={`/verificar-correo?email=${encodeURIComponent(email)}`}>
+            <Link to={verifyLink}>
               <Button className="w-full mb-3">Reenviar correo de verificación</Button>
             </Link>
             <button
@@ -77,7 +83,7 @@ export default function Login() {
 
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <h2 className="text-xl font-semibold text-slate-900 mb-1">Bienvenido de vuelta</h2>
-          <p className="text-sm text-slate-500 mb-6">Ingresa a tu cuenta ciudadana</p>
+          <p className="text-sm text-slate-500 mb-6">Ingresa a tu cuenta</p>
 
           {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-4" />}
 

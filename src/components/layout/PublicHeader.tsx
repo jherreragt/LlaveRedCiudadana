@@ -10,6 +10,7 @@ const publicNav = [
   { to: '/que-es', label: '¿Qué es Llave GT?' },
   { to: '/como-funciona', label: 'Cómo funciona' },
   { to: '/privacidad', label: 'Privacidad y seguridad' },
+  { to: '/desarrolladores', label: 'Desarrolladores' },
 ];
 
 export default function PublicHeader() {

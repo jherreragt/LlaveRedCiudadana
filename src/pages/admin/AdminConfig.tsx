@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Settings, Shield, Building2, Save } from 'lucide-react';
+import { Settings, Shield, Building2, KeyRound, AlertTriangle } from 'lucide-react';
 import AdminLayout from '../../components/layout/AdminLayout';
 import Button from '../../components/ui/Button';
 import Alert from '../../components/ui/Alert';
-import { formatDateTime } from '../../lib/utils';
 import { supabase } from '../../lib/supabase';
-import type { Profile } from '../../lib/types';
+
 
 export default function AdminConfig() {
   const [stats, setStats] = useState({ totalApps: 0, activeApps: 0, totalEvents: 0, totalUsers: 0 });
@@ -42,6 +41,37 @@ export default function AdminConfig() {
       {saved && <Alert type="success" message="Configuración guardada." onClose={() => setSaved(false)} className="mb-4" />}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* OAuth Server status */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+          <h2 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+            <KeyRound size={18} className="text-teal-600" /> Servidor OAuth 2.1 / OIDC
+          </h2>
+          <div className="space-y-3">
+            <ConfigRow label="Estado" value="Configuración manual requerida" />
+            <ConfigRow label="Ruta de autorización" value="/oauth/consent" />
+            <ConfigRow label="Flow soportado" value="Authorization Code + PKCE S256" />
+            <ConfigRow label="Scopes" value="openid, email, profile" />
+            <ConfigRow label="Firma JWT" value="RS256 (asimétrica)" />
+          </div>
+          <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="flex items-start gap-2">
+              <AlertTriangle size={16} className="text-amber-600 mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs font-medium text-amber-900">Configuración manual en Supabase Dashboard</p>
+                <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+                  Para activar el servidor OAuth, un administrador de Supabase debe:
+                </p>
+                <ol className="text-xs text-amber-700 mt-1.5 space-y-1 list-decimal list-inside">
+                  <li>Ir a Authentication &gt; OAuth Server</li>
+                  <li>Establecer Authorization Path en <span className="font-mono">/oauth/consent</span></li>
+                  <li>Migrar las claves JWT a RS256 o ES256 en Authentication &gt; JWT Keys</li>
+                  <li>Registrar clientes OAuth en Authentication &gt; OAuth Apps</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* System info */}
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
           <h2 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
