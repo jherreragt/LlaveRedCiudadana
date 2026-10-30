@@ -94,8 +94,43 @@ export interface Database {
         Relationships: [];
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Views: {
+      available_apps: {
+        Row: AvailableApp;
+      };
+    };
+    Functions: {
+      set_user_role: {
+        Args: { p_user_id: string; p_role: string; p_scope: string | null };
+        Returns: void;
+      };
+      set_user_active: {
+        Args: { p_user_id: string; p_active: boolean };
+        Returns: void;
+      };
+      has_admin_role: {
+        Args: { p_scope?: string | null };
+        Returns: boolean;
+      };
+      has_staff_role: {
+        Args: { p_scope?: string | null };
+        Returns: boolean;
+      };
+      log_security_event: {
+        Args: { p_user_id: string; p_event_type: string; p_description?: string; p_ip_address?: string; p_user_agent?: string };
+        Returns: void;
+      };
+      verify_certificate_by_code: {
+        Args: { p_code: string };
+        Returns: {
+          participant_name: string;
+          course_title: string;
+          issued_at: string;
+          is_valid: boolean;
+          attendance_percentage: number;
+        }[];
+      };
+    };
   };
 }
 
@@ -148,6 +183,13 @@ export interface SecurityEvent {
   created_at: string;
 }
 
+export interface AvailableApp {
+  id: string;
+  name: string;
+  description: string;
+  logo_url: string;
+}
+
 export interface AppConnectionWithApp extends UserAppConnection {
-  app: ConnectedApp;
+  app: ConnectedApp | AvailableApp;
 }

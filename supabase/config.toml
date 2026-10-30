@@ -1,0 +1,2 @@
+[functions.revoke-user-sessions]
+verify_jwt = true

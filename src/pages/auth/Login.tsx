@@ -24,7 +24,6 @@ export default function Login() {
     const { error: signInError, needsVerification: shouldVerify } = await signIn(email, password);
     setLoading(false);
     if (shouldVerify) {
-      const verifyRedirect = redirectPath ? `?redirect=${encodeURIComponent(redirectPath)}` : '';
       setNeedsVerification(true);
       return;
     }

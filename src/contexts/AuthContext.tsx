@@ -96,7 +96,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         full_name: fullName,
       };
-      await supabase.from('profiles').insert(profileData);
+      const { error: profileError } = await supabase.from('profiles').insert(profileData);
+      if (profileError) {
+        const needsVerif = !data.session;
+        return {
+          error: 'Tu cuenta fue creada pero hubo un problema al guardar tu perfil. Intenta iniciar sesión; si no funciona, contacta soporte.',
+          needsVerification: needsVerif,
+        };
+      }
       await fetchProfile(data.user.id);
     }
     const needsVerification = data.user && !data.session;

@@ -1,0 +1,9 @@
+{
+  "projectId": "66039863",
+  "functions": {
+    "revoke-user-sessions": {
+      "hasChanged": false,
+      "hash": "1a71a8df98f2eba23119c10fe03c83b46c311141bb0644c879e9f4bcca96bed0"
+    }
+  }
+}

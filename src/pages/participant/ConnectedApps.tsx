@@ -7,7 +7,7 @@ import Spinner from '../../components/ui/Spinner';
 import EmptyState from '../../components/ui/EmptyState';
 import Button from '../../components/ui/Button';
 import { formatDateTime } from '../../lib/utils';
-import type { ConnectedApp, UserAppConnection, AppConnectionWithApp } from '../../lib/types';
+import type { ConnectedApp, AppConnectionWithApp } from '../../lib/types';
 
 export default function ConnectedApps() {
   const { user } = useAuth();
@@ -25,7 +25,7 @@ export default function ConnectedApps() {
         .select('*, app:connected_apps(*)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false }),
-      supabase.from('connected_apps').select('*').eq('status', 'active').order('name'),
+      supabase.from('available_apps').select('*').order('name'),
     ]);
     setConnections((connRes.data ?? []) as unknown as AppConnectionWithApp[]);
     setAvailableApps((appsRes.data ?? []) as ConnectedApp[]);

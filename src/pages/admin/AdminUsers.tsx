@@ -67,6 +67,18 @@ export default function AdminUsers() {
       p_active: editUser.is_active,
     });
 
+    if (!activeError && !editUser.is_active) {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/revoke-user-sessions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${currentSession?.access_token ?? ''}`,
+        },
+        body: JSON.stringify({ target_user_id: editUser.id }),
+      });
+    }
+
     setSaving(false);
     if (activeError) {
       const msg = activeError.message ?? '';

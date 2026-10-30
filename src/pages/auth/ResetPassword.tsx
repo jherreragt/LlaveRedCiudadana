@@ -14,12 +14,18 @@ export default function ResetPassword() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [hasRecoverySession, setHasRecoverySession] = useState(false);
+  const [recoveryWarning, setRecoveryWarning] = useState(false);
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
+        const url = window.location.href;
+        const isRecovery = url.includes('type=recovery') || url.includes('type=password');
         setHasRecoverySession(true);
+        if (!isRecovery) {
+          setRecoveryWarning(true);
+        }
       }
       setChecking(false);
     });
@@ -116,6 +122,9 @@ export default function ResetPassword() {
               <h2 className="text-lg font-semibold text-slate-900 mb-1">Crea una nueva contraseña</h2>
               <p className="text-sm text-slate-500 mb-6">Tu contraseña anterior ya no es válida.</p>
 
+              {recoveryWarning && (
+                <Alert type="error" message="Esta página solo funciona desde un enlace de recuperación. Si necesitas restablecer tu contraseña, solicita un enlace nuevo." className="mb-4" />
+              )}
               {error && <Alert type="error" message={error} onClose={() => setError('')} className="mb-4" />}
 
               <form onSubmit={handleSubmit} className="space-y-4">
