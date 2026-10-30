@@ -1,0 +1,37 @@
+Advisor findings: 18 total
+
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_attendance_records\` has RLS enabled, but no policies exist
+  table: _bak_p0_attendance_records
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_certificates\` has RLS enabled, but no policies exist
+  table: _bak_p0_certificates
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_course_sessions\` has RLS enabled, but no policies exist
+  table: _bak_p0_course_sessions
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_courses\` has RLS enabled, but no policies exist
+  table: _bak_p0_courses
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_email_logs\` has RLS enabled, but no policies exist
+  table: _bak_p0_email_logs
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_enrollments\` has RLS enabled, but no policies exist
+  table: _bak_p0_enrollments
+[INFO] rls_enabled_no_policy: Table \`public._bak_p0_profiles\` has RLS enabled, but no policies exist
+  table: _bak_p0_profiles
+[WARN] anon_security_definer_function_executable: Function `public.update_updated_at_column()` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/update_updated_at_column`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: update_updated_at_column
+[WARN] anon_security_definer_function_executable: Function `public.verify_certificate_by_code(p_code text)` can be executed by the `anon` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/verify_certificate_by_code`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: verify_certificate_by_code
+[WARN] authenticated_security_definer_function_executable: Function `public.has_admin_role(p_scope text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/has_admin_role`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: has_admin_role
+[WARN] authenticated_security_definer_function_executable: Function `public.has_staff_role(p_scope text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/has_staff_role`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: has_staff_role
+[WARN] authenticated_security_definer_function_executable: Function `public.is_oauth_client_token()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/is_oauth_client_token`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: is_oauth_client_token
+[WARN] authenticated_security_definer_function_executable: Function `public.log_security_event(p_user_id uuid, p_event_type text, p_description text, p_ip_address text, p_user_agent text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/log_security_event`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: log_security_event
+[WARN] authenticated_security_definer_function_executable: Function `public.set_user_active(p_user_id uuid, p_active boolean)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/set_user_active`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: set_user_active
+[WARN] authenticated_security_definer_function_executable: Function `public.set_user_role(p_user_id uuid, p_role text, p_scope text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/set_user_role`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: set_user_role
+[WARN] authenticated_security_definer_function_executable: Function `public.update_updated_at_column()` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/update_updated_at_column`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: update_updated_at_column
+[WARN] authenticated_security_definer_function_executable: Function `public.verify_certificate_by_code(p_code text)` can be executed by the `authenticated` role as a `SECURITY DEFINER` function via `/rest/v1/rpc/verify_certificate_by_code`. Revoke `EXECUTE` or switch it to `SECURITY INVOKER` if that is not intentional.
+  table: verify_certificate_by_code
+[WARN] auth_leaked_password_protection: Supabase Auth prevents the use of compromised passwords by checking against HaveIBeenPwned.org. Enable this feature to enhance security.
