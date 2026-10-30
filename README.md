@@ -101,6 +101,7 @@ y servicios dentro del ecosistema de Red Ciudadana, mediante el protocolo OAuth 
 | Backend | Supabase (Auth, PostgreSQL, Edge Functions) |
 | Validación JWT | jose (biblioteca estándar JOSE) |
 | Auth SDK | @supabase/supabase-js v2.118.0 |
+| Edge Functions | Deno (revocación de sesiones, proxies) |
 
 ---
 
@@ -148,7 +149,7 @@ Ver [`docs/ENVIRONMENT.md`](docs/ENVIRONMENT.md) para la documentación completa
 3. **Authentication > SMTP Settings**: Configurar SMTP personalizado
 4. **Authentication > JWT Keys**: Migrar a RS256 o ES256
 5. **Authentication > OAuth Server**: Habilitar, Authorization Path = `/oauth/consent`
-6. **Authentication > OAuth Apps**: Registrar clientes OAuth
+6. **Authentication > OAuth Server > Clients**: Registrar clientes OAuth — ver [`docs/OAUTH_CLIENT_REGISTRATION.md`](docs/OAUTH_CLIENT_REGISTRATION.md) para los datos exactos de Escuela Conecta Futuro y Certificados
 
 ---
 
@@ -239,7 +240,8 @@ docs/                           # Documentación operativa
 | Tabla | Propósito |
 |-------|-----------|
 | `profiles` | Datos de identidad de usuarios |
-| `connected_apps` | Catálogo de aplicaciones OAuth |
+| `connected_apps` | Catálogo de aplicaciones OAuth (admin-only) |
+| `available_apps` | Vista pública de apps activas (sin client_id) |
 | `user_app_connections` | Vínculos usuario-aplicación |
 | `security_events` | Registro de eventos de seguridad |
 
@@ -251,6 +253,10 @@ docs/                           # Documentación operativa
 - **SECURITY DEFINER functions**: `set_user_role()`, `set_user_active()`, `has_admin_role()`, `has_staff_role()`
 - **Políticas RESTRICTIVE**: tokens OAuth (`client_id IS NOT NULL`) no pueden acceder a tablas internas
 - **`is_oauth_client_token()`**: función helper que detecta tokens de clientes OAuth
+- **Roles de admin independientes por plataforma**: `admin_scope` (`llave_gt` | `escuela` | NULL) separa privilegios entre Llave GT y Escuela Conecta Futuro — un admin de Escuela no puede modificar admines de Llave GT y viceversa
+- **Revocación de sesiones**: al desactivar un usuario, se llama a la edge function `revoke-user-sessions` que revoca todas sus sesiones activas usando la service role key
+- **Vista `available_apps`**: expone solo nombre, descripción y logo de apps activas — los `client_id` solo son visibles para admines
+- **Grants mínimos**: el rol `anon` no tiene acceso a ninguna tabla de datos de usuario
 
 ### Migraciones aplicadas
 
@@ -262,6 +268,9 @@ docs/                           # Documentación operativa
 | `20261024042000_p1b_lock_backup_tables.sql` | Bloqueo de tablas de respaldo |
 | `20261101030000_p3_identity_apps_security_tables.sql` | Tablas de apps y eventos |
 | `20261101040000_p4_oauth_rls_protection.sql` | Protección RLS contra tokens OAuth |
+| `20261030032858_p7_fix_admin_scope_and_session_revocation.sql` | Roles de admin independientes por scope + revocación de sesiones |
+| `20261030032913_p7b_fix_grants_policies_trigger_function.sql` | SELECT admin-only en connected_apps, revocar grants de anon, fix trigger function |
+| `20261030033014_p7c_create_available_apps_view.sql` | Vista pública de apps activas sin exponer client_id |
 
 ---
 
@@ -341,6 +350,7 @@ npm run typecheck # Verificación de tipos (puede tener errores preexistentes de
 | [FUNCTIONAL_TESTS.md](docs/FUNCTIONAL_TESTS.md) | Pruebas funcionales |
 | [ACCESSIBILITY_TESTS.md](docs/ACCESSIBILITY_TESTS.md) | Pruebas de accesibilidad WCAG 2.2 AA |
 | [INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) | Guía para conectar aplicaciones externas |
+| [OAUTH_CLIENT_REGISTRATION.md](docs/OAUTH_CLIENT_REGISTRATION.md) | Registro de clientes OAuth para Escuela y Certificados |
 
 ---
 
@@ -380,6 +390,15 @@ npm run typecheck # Verificación de tipos (puede tener errores preexistentes de
 7. **Separación educativa**: Las tablas educativas (courses, enrollments, certificates)
    aún existen en la base de datos. La separación a una base de datos independiente
    para Escuela Conecta Futuro requiere un proyecto Supabase separado.
+
+8. **Clientes OAuth en Dashboard**: Los clientes para Escuela Conecta Futuro y Certificados
+   deben registrarse manualmente en Supabase Dashboard > Authentication > OAuth Server > Clients.
+   Ver [`docs/OAUTH_CLIENT_REGISTRATION.md`](docs/OAUTH_CLIENT_REGISTRATION.md).
+
+9. **Edge function de revocación**: La función `revoke-user-sessions` está desplegada
+   y usa la service role key para revocar sesiones. Requiere que las variables
+   `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` estén configuradas en el entorno
+   de edge functions (automático en Supabase).
 
 ---
 
